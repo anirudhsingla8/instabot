@@ -2,12 +2,15 @@ import requests,urllib
 
 # this is the app acces token
 APP_ACCESS_TOKEN = '3063548436.a42c93b.67ddd0dedd7c4bb3b755b9acbb7aea42'
+
+# this is base url
 BASE_URL = 'https://api.instagram.com/v1/'
+
 
 # to get the information of self
 def self_info():
-    request_url = (BASE_URL + 'users/self/?access_token=%s') %(APP_ACCESS_TOKEN)
-    print 'GET request url : %s' %(request_url)
+    request_url = (BASE_URL + 'users/self/?access_token=%s') % APP_ACCESS_TOKEN
+    print 'GET request url : %s' % request_url
     user_info = requests.get(request_url).json()
 
     if user_info['meta']['code'] == 200:
@@ -21,10 +24,11 @@ def self_info():
     else:
         print 'status code other than 200 received'
 
+
 # to get the user id
 def get_user_id(insta_username):
     request_url = (BASE_URL + 'users/search?q=%s&access_token=%s') %(insta_username,APP_ACCESS_TOKEN)
-    print 'GET request url : %s' % (request_url)
+    print 'GET request url : %s' % request_url
     user_info = requests.get(request_url).json()
 
     if user_info['meta']['code'] == 200:
@@ -44,7 +48,7 @@ def get_user_info(insta_username):
         print 'User does not exist!'
         exit()
     request_url = (BASE_URL + 'users/%s?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
-    print 'GET request url : %s' % (request_url)
+    print 'GET request url : %s' % request_url
     user_info = requests.get(request_url).json()
 
     if user_info['meta']['code'] == 200:
@@ -55,6 +59,24 @@ def get_user_info(insta_username):
             print 'No. of posts: %s' % (user_info['data']['counts']['media'])
         else:
             print 'There is no data for this user!'
+    else:
+        print 'Status code other than 200 received!'
+
+
+# function to get self post
+def get_own_post():
+    request_url = (BASE_URL + 'users/self/media/recent/?access_token=%s') % APP_ACCESS_TOKEN
+    print 'GET request url : %s' % request_url
+    own_media = requests.get(request_url).json()
+
+    if own_media['meta']['code'] == 200:
+        if len(own_media['data']):
+            image_name = own_media['data'][0]['id'] + '.jpeg'
+            image_url = own_media['data'][0]['images']['standard_resolution']['url']
+            urllib.urlretrieve(image_url, image_name)
+            print 'Your image has been downloaded!'
+        else:
+            print 'Post does not exist!'
     else:
         print 'Status code other than 200 received!'
 
