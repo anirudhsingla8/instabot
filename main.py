@@ -9,7 +9,7 @@ APP_ACCESS_TOKEN = '3063548436.a42c93b.67ddd0dedd7c4bb3b755b9acbb7aea42'
 BASE_URL = 'https://api.instagram.com/v1/'
 
 
-# to get the information of self
+# to get the information of selfie
 def self_info():
     request_url = (BASE_URL + 'users/self/?access_token=%s') % APP_ACCESS_TOKEN
     print 'GET request url : %s' % request_url
@@ -182,6 +182,44 @@ def delete_negative_comment(insta_username):
             print 'There are no comments on the post'
     else:
         print 'status code other than 200 received'
+
+
+# to get list of likes
+def get_like_list(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = (BASE_URL + 'media/%s/likes?access_token=%s') % (media_id, APP_ACCESS_TOKEN)
+    print 'GET request url : %s' % request_url
+    like_info = requests.get(request_url).json()
+    if like_info['meta']['code'] == 200:
+        if len(like_info['data']):
+            for x in range(0, len(like_info['data'])):
+                print 'liked by: %s' % like_info['data'][x]['username']
+                x = x + 1
+        else:
+            print 'no like on the data'
+    else:
+        print 'status code other than 200 received'
+
+
+# to get list of comments
+def get_comment_list(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = (BASE_URL + 'media/%s/comments?access_token=%s') % (media_id, APP_ACCESS_TOKEN)
+    print 'GET request url : %s' % request_url
+    comment_info = requests.get(request_url).json()
+    if comment_info['meta']['code'] == 200:
+        if len(comment_info['data']):
+            for x in range(0, len(comment_info['data'])):
+                print 'comment list is: %s' % comment_info['data'][x]['text']
+                x = x + 1
+        else:
+            print 'no comment on post'
+    else:
+        print 'status code other than 200 received'
+
+
+
+
 
 
 def start_bot():
