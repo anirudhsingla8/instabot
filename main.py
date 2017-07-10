@@ -257,17 +257,6 @@ def natural_calamity(insta_username):
                         # download the image by the user
                         urllib.urlretrieve(image_url, image_name)
                         print 'your image with tag disaster has been downloaded'
-                        if user_info['data'][x]['videos']:
-                            media_id = user_info['data'][x]['id']
-                            print media_id
-                            video_name = user_info['data'][x]['id'] + '.mp4'
-                            video_url = user_info['data'][x]['videos']['standard_resolution']['url']
-                            print 'video url is: '+ video_url
-                            # download the video by the user
-                            urllib.urlretrieve(video_url, video_name)
-                            print 'your video has been downloaded'
-                        else:
-                            print 'there is no video media.'
                     else:
                         y = y + 1
                 x = x + 1
