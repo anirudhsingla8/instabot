@@ -1,6 +1,7 @@
 import requests,urllib
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
+from termcolor import colored
 
 # this is the app access token
 APP_ACCESS_TOKEN = '3063548436.a42c93b.67ddd0dedd7c4bb3b755b9acbb7aea42'
@@ -8,19 +9,24 @@ APP_ACCESS_TOKEN = '3063548436.a42c93b.67ddd0dedd7c4bb3b755b9acbb7aea42'
 # this is base url
 BASE_URL = 'https://api.instagram.com/v1/'
 
+# list for disasters for testing natural calamity test.
+disasters = ['KARTING','AVALANCHES','AVALANCHE','LANDSLIDES','LANDSLIDE','EARTHQUAKES','EARTHQUAKE','SINKHOLES','SINKHOLE','VOLCANIC ERUPTIONS','VOLCANIC ERUPTION','FLOODS','FLOOD','LIMNIC ERUPTIONS','LIMNIC ERUPTION','TSUNAMI','BLIZZARDS','BLIZZARD','CYCLONIC STORMS','CYCLONIC STORM','DROUGHTS','DROUGHT','THUNDERSTORMS','THUNDERSTORM','HAILSTORMS','HAILSTORM','HEAT WAVE','HEAT WAVES','TORNADOES','TORNADOE','WILDFIRES','WILDFIRE','AIRBURST','SOLAR FLARES','SOLAR FLARE']
+
 
 # to get the information of selfie
 def self_info():
+    # our request url
     request_url = (BASE_URL + 'users/self/?access_token=%s') % APP_ACCESS_TOKEN
     print 'GET request url : %s' % request_url
+    # sending request
     user_info = requests.get(request_url).json()
 
     if user_info['meta']['code'] == 200:
         if len(user_info['data']):
-            print 'Username: %s' %(user_info['data']['username'])
-            print 'No. of followers: %s' %(user_info['data']['counts']['followed_by'])
-            print 'No. of people you are following: %s' % (user_info['data']['counts']['follows'])
-            print 'No. of posts: %s' % (user_info['data']['counts']['media'])
+            print colored('Username: %s','blue') %(user_info['data']['username'])
+            print colored('No. of followers: %s','blue') %(user_info['data']['counts']['followed_by'])
+            print colored('No. of people you are following: %s','blue') % (user_info['data']['counts']['follows'])
+            print colored('No. of posts: %s','blue') % (user_info['data']['counts']['media'])
         else:
             print 'User does not exist'
     else:
@@ -29,6 +35,7 @@ def self_info():
 
 # to get the user id
 def get_user_id(insta_username):
+    # our url and sending request
     request_url = (BASE_URL + 'users/search?q=%s&access_token=%s') %(insta_username,APP_ACCESS_TOKEN)
     print 'GET request url : %s' % request_url
     user_info = requests.get(request_url).json()
@@ -45,6 +52,7 @@ def get_user_id(insta_username):
 
 # to get the info about the user
 def get_user_info(insta_username):
+    # user id is stored in this
     user_id = get_user_id(insta_username)
     if user_id == None:
         print 'User does not exist!'
@@ -52,13 +60,13 @@ def get_user_info(insta_username):
     request_url = (BASE_URL + 'users/%s?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
     print 'GET request url : %s' % request_url
     user_info = requests.get(request_url).json()
-
+    # showing the user info
     if user_info['meta']['code'] == 200:
         if len(user_info['data']):
-            print 'Username: %s' % (user_info['data']['username'])
-            print 'No. of followers: %s' % (user_info['data']['counts']['followed_by'])
-            print 'No. of people you are following: %s' % (user_info['data']['counts']['follows'])
-            print 'No. of posts: %s' % (user_info['data']['counts']['media'])
+            print colored('Username: %s','green') % (user_info['data']['username'])
+            print colored('No. of followers: %s','green') % (user_info['data']['counts']['followed_by'])
+            print colored('No. of people you are following: %s','green') % (user_info['data']['counts']['follows'])
+            print colored('No. of posts: %s','green') % (user_info['data']['counts']['media'])
         else:
             print 'There is no data for this user!'
     else:
@@ -67,6 +75,7 @@ def get_user_info(insta_username):
 
 # function to get self post
 def get_own_post():
+    # url to get the recent post posted by self
     request_url = (BASE_URL + 'users/self/media/recent/?access_token=%s') % APP_ACCESS_TOKEN
     print 'GET request url : %s' % request_url
     own_media = requests.get(request_url).json()
@@ -75,6 +84,7 @@ def get_own_post():
         if len(own_media['data']):
             image_name = own_media['data'][0]['id'] + '.jpeg'
             image_url = own_media['data'][0]['images']['standard_resolution']['url']
+            # this will download the image
             urllib.urlretrieve(image_url, image_name)
             print 'Your image has been downloaded!'
         else:
@@ -85,6 +95,7 @@ def get_own_post():
 
 # to get user post
 def get_user_post(insta_username):
+    # to get the recent post posted by the user
     user_id = get_user_id(insta_username)
     if user_id == None:
         print 'User does not exist!'
@@ -97,6 +108,7 @@ def get_user_post(insta_username):
         if len(user_media['data']):
             image_name = user_media['data'][0]['id'] + '.jpeg'
             image_url = user_media['data'][0]['images']['standard_resolution']['url']
+            # download the image by the user
             urllib.urlretrieve(image_url, image_name)
             print 'Your image has been downloaded!'
         else:
@@ -113,10 +125,12 @@ def get_post_id(insta_username):
         exit()
     request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
     print 'GET request url : %s' % (request_url)
+    # the json object of media of the post is stored here
     user_media = requests.get(request_url).json()
 
     if user_media['meta']['code'] == 200:
         if len(user_media['data']):
+            # return the post id of the user
             return user_media['data'][0]['id']
         else:
             print 'There is no recent post of the user!'
@@ -128,8 +142,10 @@ def get_post_id(insta_username):
 
 # to like a post
 def like_a_post(insta_username):
+    # getting media id of user from the get_post_id function
     media_id = get_post_id(insta_username)
     request_url = (BASE_URL + 'media/%s/likes') % media_id
+    # defined body for post request sending method
     payload = {"access_token": APP_ACCESS_TOKEN}
     print 'post request url : %s' % request_url
     post_a_like = requests.post(request_url, payload).json()
@@ -218,8 +234,47 @@ def get_comment_list(insta_username):
         print 'status code other than 200 received'
 
 
+# to check post with the natural calamity in user post
+def natural_calamity(insta_username):
+    user_id = get_user_id(insta_username)
+    if user_id == None:
+        print 'User does not exist!'
+        exit()
 
-
+    request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
+    print 'GET request url : %s' % request_url
+    user_info = requests.get(request_url).json()
+    if user_info['meta']['code'] == 200:
+        if len(user_info['data']):
+            for x in range(0,len(user_info['data'])):
+                for y in range(0,len(user_info['data'][x]['tags'])):
+                    if user_info['data'][x]['tags'][y].upper() in disasters:
+                        media_id = user_info['data'][x]['id']
+                        print media_id
+                        image_name = user_info['data'][x]['id'] + '.jpeg'
+                        image_url = user_info['data'][x]['images']['standard_resolution']['url']
+                        print 'image url is: '+ image_url
+                        # download the image by the user
+                        urllib.urlretrieve(image_url, image_name)
+                        print 'your image with tag disaster has been downloaded'
+                        if user_info['data'][x]['videos']:
+                            media_id = user_info['data'][x]['id']
+                            print media_id
+                            video_name = user_info['data'][x]['id'] + '.mp4'
+                            video_url = user_info['data'][x]['videos']['standard_resolution']['url']
+                            print 'video url is: '+ video_url
+                            # download the video by the user
+                            urllib.urlretrieve(video_url, video_name)
+                            print 'your video has been downloaded'
+                        else:
+                            print 'there is no video media.'
+                    else:
+                        y = y + 1
+                x = x + 1
+        else:
+            print colored('there is no data or post found','red')
+    else:
+        print colored('status code other than 200 received','red')
 
 
 def start_bot():
@@ -236,7 +291,8 @@ def start_bot():
         print "g.Get a list of comments on the recent post of a user\n"
         print "h.Make a comment on the recent post of a user\n"
         print "i.Delete negative comments from the recent post of a user\n"
-        print "j.Exit"
+        print "j.for post with natural calamity\n"
+        print "k.Exit"
 
         choice=raw_input("Enter you choice: ")
         if choice=="a":
@@ -264,7 +320,10 @@ def start_bot():
         elif choice == "i":
             insta_username = raw_input("Enter the username of the user: ")
             delete_negative_comment(insta_username)
-        elif choice=="j":
+        elif choice == "j":
+            insta_username = raw_input("enter the username of the user: ")
+            natural_calamity(insta_username)
+        elif choice=="k":
             exit()
         else:
             print "wrong choice"
