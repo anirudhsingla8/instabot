@@ -234,8 +234,8 @@ def get_comment_list(insta_username):
         print 'status code other than 200 received'
 
 
-# to check post with the natural calamity in user post
-def natural_calamity(insta_username):
+# to check post with the natural calamity or disaster tag in user post
+def natural_calamity_tags(insta_username):
     user_id = get_user_id(insta_username)
     if user_id == None:
         print 'User does not exist!'
@@ -248,9 +248,12 @@ def natural_calamity(insta_username):
         if len(user_info['data']):
             for x in range(0,len(user_info['data'])):
                 for y in range(0,len(user_info['data'][x]['tags'])):
+                    # checking tags in disaster
                     if user_info['data'][x]['tags'][y].upper() in disasters:
+                        print colored('image with disaster tag has been found','red')
+                        # getting media id of the image
                         media_id = user_info['data'][x]['id']
-                        print media_id
+                        # print media_id
                         image_name = user_info['data'][x]['id'] + '.jpeg'
                         image_url = user_info['data'][x]['images']['standard_resolution']['url']
                         print 'image url is: '+ image_url
@@ -264,6 +267,42 @@ def natural_calamity(insta_username):
             print colored('there is no data or post found','red')
     else:
         print colored('status code other than 200 received','red')
+
+
+# to find captions with disaster related word and download image
+def natural_calamity_captions(insta_username):
+    user_id = get_user_id(insta_username)
+    if user_id == None:
+        print 'User does not exist!'
+        exit()
+
+    request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
+    print 'GET request url : %s' % request_url
+    user_info = requests.get(request_url).json()
+    if user_info['meta']['code'] == 200:
+        if len(user_info['data']):
+            for x in range(0,len(user_info['data'])):
+                # for loop in list of disasters
+                for y in range(0,len(disasters)):
+                    # checking if the word is available in caption
+                    if disasters[y].upper() in user_info['data'][x]['caption']['text'].upper():
+                        print colored('caption with disaster warning found','red')
+                        # getting media id of the image
+                        media_id = user_info['data'][x]['id']
+                        print media_id
+                        image_name = user_info['data'][x]['id'] + '.jpeg'
+                        image_url = user_info['data'][x]['images']['standard_resolution']['url']
+                        print 'image url is: ' + image_url
+                        # download the image by the user
+                        urllib.urlretrieve(image_url, image_name)
+                        print 'your image with tag disaster has been downloaded'
+                    else:
+                        y = y + 1
+                    x = x + 1
+            else:
+              print colored('there is no data or post found', 'red')
+        else:
+            print colored('status code other than 200 received', 'red')
 
 
 def start_bot():
@@ -280,8 +319,9 @@ def start_bot():
         print "g.Get a list of comments on the recent post of a user\n"
         print "h.Make a comment on the recent post of a user\n"
         print "i.Delete negative comments from the recent post of a user\n"
-        print "j.for post with natural calamity\n"
-        print "k.Exit"
+        print "j.for post with natural calamity tag\n"
+        print "k.for post with natural calamity caption\n"
+        print "l.Exit"
 
         choice=raw_input("Enter you choice: ")
         if choice=="a":
@@ -311,8 +351,11 @@ def start_bot():
             delete_negative_comment(insta_username)
         elif choice == "j":
             insta_username = raw_input("enter the username of the user: ")
-            natural_calamity(insta_username)
-        elif choice=="k":
+            natural_calamity_tags(insta_username)
+        elif choice == 'k':
+            insta_username = raw_input("enter the username of the user: ")
+            natural_calamity_captions(insta_username)
+        elif choice=="l":
             exit()
         else:
             print "wrong choice"
