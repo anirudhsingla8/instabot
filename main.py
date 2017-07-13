@@ -268,7 +268,7 @@ def natural_calamity_tags(insta_username):
     else:
         print colored('status code other than 200 received','red')
 
-
+'''
 # to find captions with disaster related word and download image
 def natural_calamity_captions(insta_username):
     user_id = get_user_id(insta_username)
@@ -303,7 +303,7 @@ def natural_calamity_captions(insta_username):
               print colored('there is no data or post found', 'red')
         else:
             print colored('status code other than 200 received', 'red')
-
+'''
 
 def start_bot():
     while True:
