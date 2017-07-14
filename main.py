@@ -251,18 +251,20 @@ def natural_calamity_tags(insta_username):
                     # checking tags in disaster
                     if user_info['data'][x]['tags'][y].upper() in disasters:
                         print colored('image with disaster tag has been found','red')
-                        # getting media id of the image
+                        # to print media id
                         media_id = user_info['data'][x]['id']
-                        # print media_id
+                        print 'the media id is' + media_id
+
                         image_name = user_info['data'][x]['id'] + '.jpeg'
                         image_url = user_info['data'][x]['images']['standard_resolution']['url']
                         print 'image url is: '+ image_url
                         # download the image by the user
                         urllib.urlretrieve(image_url, image_name)
                         print 'your image with tag disaster has been downloaded'
-                    else:
-                        y = y + 1
-                x = x + 1
+
+
+
+
         else:
             print colored('there is no data or post found','red')
     else:
@@ -288,7 +290,7 @@ def natural_calamity_captions(insta_username):
                     if disasters[y].upper() in user_info['data'][x]['caption']['text'].upper():
                         print colored('caption with disaster warning found','red')
                         # getting media id of the image
-                        media_id = user_info['data'][x]['id']
+                         media_id = user_info['data'][x]['id']
                         print media_id
                         image_name = user_info['data'][x]['id'] + '.jpeg'
                         image_url = user_info['data'][x]['images']['standard_resolution']['url']
@@ -304,6 +306,38 @@ def natural_calamity_captions(insta_username):
         else:
             print colored('status code other than 200 received', 'red')
 '''
+
+
+# to find image within given location
+def location_search():
+    latitude = raw_input('enter the latitude location')
+    longitude = raw_input('enter the longitude location')
+    request_url = (BASE_URL + 'media/search?lat=%s&lng=%s&access_token=%s') % (latitude,longitude,APP_ACCESS_TOKEN)
+    print 'GET request url : %s' % request_url
+    media_info = requests.get(request_url).json()
+    if media_info['meta']['code'] == 200:
+        if len(media_info['data']):
+            # for if there are multiple media between this range
+            for x in range(0,len(media_info['data'])):
+                print colored('image within given location has been found', 'red')
+                media_id= media_info['data'][x]['id']
+                print 'the media id is'+media_id
+                image_name = media_info['data'][x]['id'] + '.jpeg'
+                image_url = media_info['data'][x]['images']['standard_resolution']['url']
+                print 'image url is: ' + image_url
+                # download the image by the user
+                urllib.urlretrieve(image_url, image_name)
+                print 'your image within given location has been downloaded'
+
+        else:
+            print'no image found within given location'
+    else:
+        print'code error'
+
+
+
+
+
 
 def start_bot():
     while True:
@@ -321,7 +355,8 @@ def start_bot():
         print "i.Delete negative comments from the recent post of a user\n"
         print "j.for post with natural calamity tag\n"
         print "k.for post with natural calamity caption\n"
-        print "l.Exit"
+        print "l.for post within given location"
+        print "m.Exit"
 
         choice=raw_input("Enter you choice: ")
         if choice=="a":
@@ -352,12 +387,17 @@ def start_bot():
         elif choice == "j":
             insta_username = raw_input("enter the username of the user: ")
             natural_calamity_tags(insta_username)
-        elif choice == 'k':
-            insta_username = raw_input("enter the username of the user: ")
-            natural_calamity_captions(insta_username)
-        elif choice=="l":
+        elif choice == 'l':
+            location_search()
+
+
+        elif choice=="m":
             exit()
         else:
             print "wrong choice"
-
+        '''
+        elif choice == 'k':
+        insta_username = raw_input("enter the username of the user: ")
+        natural_calamity_captions(insta_username)
+        '''
 start_bot()
