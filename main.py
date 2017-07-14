@@ -262,7 +262,7 @@ def natural_calamity_tags(insta_username):
                             print 'image url is: '+ image_url
                             # download the image by the user
                             urllib.urlretrieve(image_url, image_name)
-                            print 'your image with tag disaster has been downloaded'
+                            print colored('your image with tag disaster has been downloaded','blue')
                         # for downloading video post
                         elif user_info['data'][x]['type'] == 'video':
                             print colored('image with disaster tag has been found', 'red')
@@ -273,9 +273,9 @@ def natural_calamity_tags(insta_username):
                             video_url = user_info['data'][x]['videos']['standard_resolution']['url']
                             print 'video url is:'+ video_url
                             urllib.urlretrieve(video_url, video_name)
-                            print'your video with disaster tag has been downloaded'
+                            print colored('your video with disaster tag has been downloaded','blue')
                         else:
-                            print 'no such media with disaster tag has found'
+                            print colored('no such media with disaster tag has found','red')
 
 
 
