@@ -250,17 +250,32 @@ def natural_calamity_tags(insta_username):
                 for y in range(0,len(user_info['data'][x]['tags'])):
                     # checking tags in disaster
                     if user_info['data'][x]['tags'][y].upper() in disasters:
-                        print colored('image with disaster tag has been found','red')
-                        # to print media id
-                        media_id = user_info['data'][x]['id']
-                        print 'the media id is' + media_id
+                        # for downloading image post
+                        if user_info['data'][x]['type'] == 'image':
+                            print colored('image with disaster tag has been found','red')
+                            # to print media id
+                            media_id = user_info['data'][x]['id']
+                            print 'the media id is' + media_id
 
-                        image_name = user_info['data'][x]['id'] + '.jpeg'
-                        image_url = user_info['data'][x]['images']['standard_resolution']['url']
-                        print 'image url is: '+ image_url
-                        # download the image by the user
-                        urllib.urlretrieve(image_url, image_name)
-                        print 'your image with tag disaster has been downloaded'
+                            image_name = user_info['data'][x]['id'] + '.jpeg'
+                            image_url = user_info['data'][x]['images']['standard_resolution']['url']
+                            print 'image url is: '+ image_url
+                            # download the image by the user
+                            urllib.urlretrieve(image_url, image_name)
+                            print 'your image with tag disaster has been downloaded'
+                        # for downloading video post
+                        elif user_info['data'][x]['type'] == 'video':
+                            print colored('image with disaster tag has been found', 'red')
+                            # to print media id
+                            media_id = user_info['data'][x]['id']
+                            print 'the media id is' + media_id
+                            video_name = user_info['data'][x]['id']+'.mp4'
+                            video_url = user_info['data'][x]['videos']['standard_resolution']['url']
+                            print 'video url is:'+ video_url
+                            urllib.urlretrieve(video_url, video_name)
+                            print'your video with disaster tag has been downloaded'
+                        else:
+                            print 'no such media with disaster tag has found'
 
 
 
